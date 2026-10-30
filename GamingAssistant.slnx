@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../../../../../../Documents/GitHub/GamingAssistant/GamingAssistant.Application/GamingAssistant.Application.csproj" />
+  <Project Path="../../../../../../Documents/GitHub/GamingAssistant/GamingAssistant.Domain/GamingAssistant.Domain.csproj" />
+  <Project Path="../../../../../../Documents/GitHub/GamingAssistant/GamingAssistant.Infrastructure/GamingAssistant.Infrastructure.csproj" />
+</Solution>
