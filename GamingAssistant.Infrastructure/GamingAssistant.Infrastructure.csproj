@@ -6,4 +6,18 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Configuration\Samira\samira.personality.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Configuration\Samira\samira.personality.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GamingAssistant.Application\GamingAssistant.Application.csproj" />
+  </ItemGroup>
+
 </Project>

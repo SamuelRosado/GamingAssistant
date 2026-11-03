@@ -7,6 +7,41 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <StackPanel HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Width="250">
 
+            <TextBlock Text="Duración de la repetición"
+                   Margin="0,0,0,8"
+                   FontSize="16"/>
+
+            <ComboBox x:Name="DurationComboBox"
+                  SelectedIndex="0"
+                  Margin="0,0,0,15">
+
+                <ComboBoxItem Content="Seleccionar tiempo..."/>
+                <ComboBoxItem Content="30 segundos" Tag="30"/>
+                <ComboBoxItem Content="1 minuto" Tag="60"/>
+                <ComboBoxItem Content="5 minutos" Tag="300"/>
+                <ComboBoxItem Content="10 minutos" Tag="600"/>
+
+            </ComboBox>
+
+            <Button
+                x:Name="saveReplayButton"
+                Content="Guardar repetición"
+                Height="40"
+                Click="SaveReplayButton_Click"/>
+
+            <Button x:Name="cancelReplayButton"
+                Content="Cancelar operación"
+                Height="40"
+                IsEnabled="False"
+                Click="CancelReplayButton_Click"/>
+
+            <Button Content="Probar SAMIRA"
+        Click="TestSamira_Click"/>
+
+        </StackPanel>
     </Grid>
 </Window>
