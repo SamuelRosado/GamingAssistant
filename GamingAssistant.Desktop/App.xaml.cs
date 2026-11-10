@@ -20,8 +20,8 @@ namespace GamingAssistant.Desktop
             base.OnStartup(e);
 
             var services = new ServiceCollection();
-
-            services.AddSingleton(_personalityLoader.Load());
+            var personalitySettings = _personalityLoader.Load();
+            services.AddSingleton(personalitySettings);
             services.AddSingleton<IReplayBufferService, ReplayBufferService>();
             services.AddTransient<SaveReplayCommandHandler>();
             services.AddTransient<MainWindow>();

@@ -13,6 +13,7 @@ namespace GamingAssistant.Application.Configuration
         public string Tone { get; set; } = string.Empty;
         public string Personality { get; set; } = string.Empty;
         public SamiraOriginSettings Origin { get; set; } = new();
+        public SamiraCommunicationStyleSettings CommunicationStyle { get; set; } = new();
         public List<string> Instructions { get; set; } = [];
     }
 

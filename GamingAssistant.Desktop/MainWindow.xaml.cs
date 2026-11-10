@@ -3,8 +3,11 @@ using GamingAssistant.Application.Configuration;
 using GamingAssistant.Application.Features.ReplayBuffer.Commands;
 using GamingAssistant.Application.Features.ReplayBuffer.Commands.Handlers;
 using GamingAssistant.Application.Services;
+using GamingAssistant.Desktop.Models;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 
 namespace GamingAssistant.Desktop
@@ -19,6 +22,7 @@ namespace GamingAssistant.Desktop
         private readonly SamiraIdentityService _samiraIdentityService;
         private readonly SamiraPersonalityService _samiraPersonalityService;
         private readonly IChatCompletionService _chatCompletionService;
+        private readonly ObservableCollection<ChatMessage> _messages = new();
         public MainWindow(
             SaveReplayCommandHandler saveReplayCommandHandler, 
             SamiraIdentityService samiraIdentityService, 
@@ -26,12 +30,19 @@ namespace GamingAssistant.Desktop
             IChatCompletionService chatCompletionService)
         {
             InitializeComponent();
+            ChatMessagesControl.ItemsSource = _messages;
+            _messages.CollectionChanged += (sender, e) =>
+            {
+                ChatScrollViewer.Dispatcher.BeginInvoke(() =>
+                {
+                    ChatScrollViewer.ScrollToEnd();
+                });
+            };
             _saveReplayCommandHandler = saveReplayCommandHandler;
             _samiraIdentityService = samiraIdentityService;
             _samiraPersonalityService = samiraPersonalityService;
             _chatCompletionService = chatCompletionService;
-            MessageBox.Show(_samiraPersonalityService.GetPersonalityDescription());
-           
+
         }
 
         private async void SaveReplayButton_Click(object sender, RoutedEventArgs e)
@@ -92,20 +103,58 @@ namespace GamingAssistant.Desktop
             _cancellationTokenSource?.Cancel();
         }
 
-        private async void TestSamira_Click(object sender, RoutedEventArgs e)
+        private async void SendMessageButton_Click(object sender, RoutedEventArgs e)
         {
+            string message = MessageTextBox.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(message))
+                return;
+
+            _messages.Add(new ChatMessage
+            {
+                Content = message,
+                IsFromSamira = false
+            });
+
+            MessageTextBox.Clear();
+
+            SendMessageButton.IsEnabled = false;
+
+            ThinkingIndicator.Visibility = Visibility.Visible;
+
             try
             {
-                string answer = await _chatCompletionService.GetResponseAsync(
-                    "Quien es tu creador?",
-                    CancellationToken.None
-                );
+                string response = await _chatCompletionService
+                    .GetResponseAsync(message, CancellationToken.None);
 
-                MessageBox.Show(answer);
+                _messages.Add(new ChatMessage
+                {
+                    Content = response,
+                    IsFromSamira = true
+                });
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                MessageBox.Show(
+                    $"No se pudo obtener la respuesta de SAMIRA: {ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                ThinkingIndicator.Visibility = Visibility.Collapsed;
+                SendMessageButton.IsEnabled = true;
+            }
+        }
+
+        private void MessageTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && SendMessageButton.IsEnabled)
+            {
+                e.Handled = true;
+
+                SendMessageButton_Click(sender, new RoutedEventArgs());
             }
         }
     }
