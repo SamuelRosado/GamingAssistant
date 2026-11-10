@@ -56,25 +56,101 @@ namespace GamingAssistant.Infrastructure.Services
 
         private string BuildSystemPrompt()
         {
+            // 1. Preparar las instrucciones generales
             string instructions = string.Join(
                 "\n",
                 _samiraPersonalitySettings.Instructions
             );
 
+            // 2. Preparar las reglas de comunicación
+            string communicationRules = string.Join(
+                "\n",
+                _samiraPersonalitySettings.CommunicationStyle.CommunicationRules
+            );
+
             return $"""
+            ========================================
+            IDENTIDAD
+            ========================================
+
             Tu nombre es {_samiraPersonalitySettings.Name}.
             Tu usuario es {_samiraPersonalitySettings.UserTitle}.
             Hablas en {_samiraPersonalitySettings.Language}.
+
+            ========================================
+            PERSONALIDAD
+            ========================================
+
             Tu tono es: {_samiraPersonalitySettings.Tone}
             Tu personalidad es: {_samiraPersonalitySettings.Personality}
+
+            ========================================
+            ORIGEN
+            ========================================
+
             Tu creador es: {_samiraPersonalitySettings.Origin.Creator}
             Tu título es: {_samiraPersonalitySettings.Origin.CreatorTitle}
             Tu historia es: {_samiraPersonalitySettings.Origin.Story}
             Tu propósito es: {_samiraPersonalitySettings.Origin.Purpose}
 
-            Instrucciones:
+            ========================================
+            ESTILOS DE COMUNICACIÓN
+            ========================================
+
+            Estilo general:
+            {_samiraPersonalitySettings.CommunicationStyle.General}
+
+            Estilo normal:
+            {_samiraPersonalitySettings.CommunicationStyle.Normal}
+
+            Cuando el usuario esté frustrado:
+            {_samiraPersonalitySettings.CommunicationStyle.Frustrated}
+
+            Cuando el usuario esté triste:
+            {_samiraPersonalitySettings.CommunicationStyle.Sad}
+
+            Apoyo emocional:
+            {_samiraPersonalitySettings.CommunicationStyle.EmotionalSupport}
+
+            Cuando el usuario tenga ansiedad:
+            {_samiraPersonalitySettings.CommunicationStyle.Anxiety}
+
+            En conversaciones técnicas:
+            {_samiraPersonalitySettings.CommunicationStyle.Technical}
+
+            Cuando enseñes algo:
+            {_samiraPersonalitySettings.CommunicationStyle.Learning}
+
+            Cuando celebres un logro:
+            {_samiraPersonalitySettings.CommunicationStyle.Celebration}
+
+            En situaciones serias:
+            {_samiraPersonalitySettings.CommunicationStyle.Serious}
+
+            Cuando estés en desacuerdo:
+            {_samiraPersonalitySettings.CommunicationStyle.Disagreement}
+
+            Cuando no tengas certeza:
+            {_samiraPersonalitySettings.CommunicationStyle.Uncertainty}
+
+            Cuando utilices humor:
+            {_samiraPersonalitySettings.CommunicationStyle.Humor}
+
+            Cuando motives al usuario:
+            {_samiraPersonalitySettings.CommunicationStyle.Motivation}
+
+            ========================================
+            REGLAS DE COMUNICACIÓN
+            ========================================
+
+            {communicationRules}
+
+            ========================================
+            INSTRUCCIONES GENERALES
+            ========================================
+
             {instructions}
             """;
         }
-    }
+     }
 }
