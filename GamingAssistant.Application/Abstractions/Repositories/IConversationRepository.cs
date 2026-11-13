@@ -31,5 +31,10 @@ namespace GamingAssistant.Application.Abstractions.Repositories
         Task DeleteConversationAsync(
             int conversationId,
             CancellationToken cancellationToken);
+
+        Task RenameConversationAsync(
+            int conversationId, 
+            string newTitle, 
+            CancellationToken cancellationToken);
     }
 }

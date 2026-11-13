@@ -56,7 +56,8 @@
             Style="{StaticResource NewConversationButtonStyle}"
             FontWeight="SemiBold"
             Margin="0,0,0,22"
-            ToolTip="Crear nueva conversación"/>
+            ToolTip="Crear nueva conversación"
+            Click="NewConversationButton_Click"/>
 
             <!-- HISTORIAL -->
             <Grid x:Name="SidebarHistoryPanel"
@@ -67,15 +68,17 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0"
-               Text="CONVERSACIONES"
-               FontSize="11"
-               FontWeight="SemiBold"
-               Foreground="#A69CB5"
-               Margin="8,0,0,14"/>
+                Text="CONVERSACIONES"
+                FontSize="11"
+                FontWeight="SemiBold"
+                Foreground="#A69CB5"
+                Margin="8,0,0,14"/>
 
                 <ListBox x:Name="ConversationsListBox"
-             Grid.Row="1"
-             Style="{StaticResource ConversationsListBoxStyle}"/>
+                 Grid.Row="1"
+                 Style="{StaticResource ConversationsListBoxStyle}"
+                 SelectionChanged="ConversationsListBox_SelectionChanged"
+                 Button.Click="ConversationButton_Click"/>
 
             </Grid>
 
