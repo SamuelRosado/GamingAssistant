@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using GamingAssistant.Application.Features.Chat.Models;
 
 namespace GamingAssistant.Application.Abstractions.Services
 {
     public interface IChatCompletionService
     {
-        Task<string> GetResponseAsync(string message, CancellationToken cancellationToken);
+        Task<string> GetResponseAsync(IReadOnlyList<ConversationMessage> messages, CancellationToken cancellationToken);
     }
 }

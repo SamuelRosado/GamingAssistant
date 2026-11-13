@@ -1,0 +1,98 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ESTILO GENERAL DE BOTONES -->
+    <Style TargetType="Button">
+        <Setter Property="Background" Value="#393047"/>
+        <Setter Property="Foreground"
+                Value="{StaticResource PrimaryTextBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="12,9"/>
+        <Setter Property="Margin" Value="0,4"/>
+        <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <!-- BOTONES DE NAVEGACIÓN -->
+    <Style x:Key="SidebarNavButton"
+           TargetType="Button">
+
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground"
+                Value="{StaticResource PrimaryTextBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="12,13"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="HorizontalContentAlignment"
+                Value="Left"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="NavBorder"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="9"
+                            Padding="{TemplateBinding Padding}">
+
+                        <ContentPresenter
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="Center"/>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="NavBorder"
+                                    Property="Background"
+                                    Value="{StaticResource HoverBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- BOTÓN NUEVA CONVERSACIÓN -->
+    <Style x:Key="NewConversationButtonStyle"
+           TargetType="Button">
+
+        <Setter Property="Background"
+                Value="{StaticResource PrimaryButtonBrush}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="12,11"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="ButtonBorder"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="9"
+                            Padding="{TemplateBinding Padding}">
+
+                        <ContentPresenter
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver"
+                                 Value="True">
+                            <Setter TargetName="ButtonBorder"
+                                    Property="Background"
+                                    Value="#8A62C7"/>
+                        </Trigger>
+
+                        <Trigger Property="IsPressed"
+                                 Value="True">
+                            <Setter TargetName="ButtonBorder"
+                                    Property="Background"
+                                    Value="#63458F"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

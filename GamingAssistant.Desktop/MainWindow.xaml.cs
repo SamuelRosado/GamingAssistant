@@ -1,161 +1,118 @@
-﻿using GamingAssistant.Application.Abstractions.Services;
-using GamingAssistant.Application.Configuration;
-using GamingAssistant.Application.Features.ReplayBuffer.Commands;
-using GamingAssistant.Application.Features.ReplayBuffer.Commands.Handlers;
-using GamingAssistant.Application.Services;
-using GamingAssistant.Desktop.Models;
-using System.Collections.ObjectModel;
+﻿using GamingAssistant.Application.Abstractions.Repositories;
+using GamingAssistant.Application.Abstractions.Services;
+using GamingAssistant.Desktop.ViewModels;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-
 
 namespace GamingAssistant.Desktop
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly SaveReplayCommandHandler _saveReplayCommandHandler;
-        private CancellationTokenSource? _cancellationTokenSource;
-        private readonly SamiraIdentityService _samiraIdentityService;
-        private readonly SamiraPersonalityService _samiraPersonalityService;
-        private readonly IChatCompletionService _chatCompletionService;
-        private readonly ObservableCollection<ChatMessage> _messages = new();
-        public MainWindow(
-            SaveReplayCommandHandler saveReplayCommandHandler, 
-            SamiraIdentityService samiraIdentityService, 
-            SamiraPersonalityService samiraPersonalityService, 
-            IChatCompletionService chatCompletionService)
+        private readonly ChatViewModel _chatViewModel;
+        private readonly SidebarViewModel _sidebarViewModel;
+        private bool _conversationHistoryLoaded;
+        private int _currentConversationId = 1;
+        public MainWindow(IChatCompletionService chatCompletionService, IConversationRepository conversationRepository)
         {
             InitializeComponent();
-            ChatMessagesControl.ItemsSource = _messages;
-            _messages.CollectionChanged += (sender, e) =>
+
+            _chatViewModel = new ChatViewModel(chatCompletionService, conversationRepository);
+            _sidebarViewModel = new SidebarViewModel(conversationRepository);
+
+            SidebarControl.ToggleSidebarRequested += (sender, e) =>
             {
-                ChatScrollViewer.Dispatcher.BeginInvoke(() =>
-                {
-                    ChatScrollViewer.ScrollToEnd();
-                });
+                _sidebarViewModel.ToggleSidebar();
             };
-            _saveReplayCommandHandler = saveReplayCommandHandler;
-            _samiraIdentityService = samiraIdentityService;
-            _samiraPersonalityService = samiraPersonalityService;
-            _chatCompletionService = chatCompletionService;
 
-        }
+            SidebarControl.SetConversations(_sidebarViewModel.Conversations);
+            SidebarControl.SetExpanded(_sidebarViewModel.IsExpanded);
+            SidebarColumn.Width = new GridLength(_sidebarViewModel.IsExpanded ? 245 : 72);
 
-        private async void SaveReplayButton_Click(object sender, RoutedEventArgs e)
-        {
-            
-            try
+            _sidebarViewModel.PropertyChanged += (sender, e) =>
             {
-                var selectedItem = DurationComboBox.SelectedItem as ComboBoxItem;
-
-                if (selectedItem == null || selectedItem.Tag == null)
+                if (e.PropertyName == nameof(SidebarViewModel.IsExpanded))
                 {
-                    MessageBox.Show("Por favor, selecciona una duración.", "GamingAssistant", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
+                    SidebarColumn.Width = new GridLength(
+                        _sidebarViewModel.IsExpanded ? 245 : 72);
+
+                    SidebarControl.SetExpanded(_sidebarViewModel.IsExpanded);
                 }
+            };
 
+            ChatControl.SetMessages(_chatViewModel.Messages);
 
-                if (!int.TryParse(selectedItem.Tag.ToString(), out int duration))
-                    return;
-
-                var command = new SaveReplayCommand(TimeSpan.FromSeconds(duration));
-
-                _cancellationTokenSource = new CancellationTokenSource();
-
-                saveReplayButton.IsEnabled = false;
-                cancelReplayButton.IsEnabled = true;
-
-                await _saveReplayCommandHandler.HandleAsync(command, _cancellationTokenSource.Token);
-            }
-            catch(OperationCanceledException)
+            _chatViewModel.PropertyChanged += (sender, e) =>
             {
-                MessageBox.Show(
-                "La operación fue cancelada.",
-                "GamingAssistant",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show(
-                $"No se pudo guardar la repetición: {ex.Message}",
-                "Error",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
+                if (e.PropertyName == nameof(ChatViewModel.IsThinking) ||
+                    e.PropertyName == nameof(ChatViewModel.CanSendMessage))
+                {
+                    UpdateChatState();
+                }
+            };
 
-            }
-            finally 
+            ChatControl.SendMessageRequested += (sender, e) =>
             {
-                saveReplayButton.IsEnabled = true;
-                cancelReplayButton.IsEnabled = false;
+                SendMessageButton_Click(sender, new RoutedEventArgs());
+            };
 
-                _cancellationTokenSource?.Dispose();
-                _cancellationTokenSource = null;
-            }
+            _chatViewModel.Messages.CollectionChanged += (sender, e) =>
+            {
+                ChatControl.ScrollToBottom();
+            };
+
+            ChatControl.SetSendEnabled(false);
+            Loaded += MainWindow_Loaded;
+
         }
 
-        private void CancelReplayButton_Click(object sender, RoutedEventArgs e)
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            _cancellationTokenSource?.Cancel();
-        }
-
-        private async void SendMessageButton_Click(object sender, RoutedEventArgs e)
-        {
-            string message = MessageTextBox.Text.Trim();
-
-            if (string.IsNullOrWhiteSpace(message))
-                return;
-
-            _messages.Add(new ChatMessage
-            {
-                Content = message,
-                IsFromSamira = false
-            });
-
-            MessageTextBox.Clear();
-
-            SendMessageButton.IsEnabled = false;
-
-            ThinkingIndicator.Visibility = Visibility.Visible;
-
             try
             {
-                string response = await _chatCompletionService
-                    .GetResponseAsync(message, CancellationToken.None);
+                await _sidebarViewModel.LoadConversationsAsync();
+                await _chatViewModel.LoadConversationHistoryAsync(_currentConversationId);
 
-                _messages.Add(new ChatMessage
-                {
-                    Content = response,
-                    IsFromSamira = true
-                });
+                _conversationHistoryLoaded = true;
+                _chatViewModel.CanSendMessage = true;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"No se pudo obtener la respuesta de SAMIRA: {ex.Message}",
+                    $"No se pudo cargar el historial de SAMIRA: {ex.Message}",
+                    "Error de memoria",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+        private async void SendMessageButton_Click(object sender, RoutedEventArgs e)
+        {
+            string message = ChatControl.GetMessageText();
+
+            if (string.IsNullOrWhiteSpace(message) ||
+                _chatViewModel.IsThinking)
+                return;
+
+            ChatControl.ClearMessageText();
+
+            try
+            {
+                await _chatViewModel.SendMessageAsync(
+                    message,
+                    _currentConversationId,
+                    _conversationHistoryLoaded);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Ocurrió un error durante la conversación: {ex.Message}",
                     "Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
-            finally
-            {
-                ThinkingIndicator.Visibility = Visibility.Collapsed;
-                SendMessageButton.IsEnabled = true;
-            }
         }
-
-        private void MessageTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void UpdateChatState()
         {
-            if (e.Key == Key.Enter && SendMessageButton.IsEnabled)
-            {
-                e.Handled = true;
-
-                SendMessageButton_Click(sender, new RoutedEventArgs());
-            }
+            ChatControl.SetThinking(_chatViewModel.IsThinking);
+            ChatControl.SetSendEnabled(_chatViewModel.CanSendMessage);
         }
     }
 }
