@@ -167,6 +167,8 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
             <!-- ICONO -->
@@ -202,6 +204,146 @@
                    FontSize="12"
                    Foreground="{StaticResource PrimaryTextBrush}"
                    VerticalAlignment="Center"/>
+            <!-- BOTÓN RENOMBRAR CONVERSACIÓN -->
+            <Button x:Name="RenameConversationButton"
+                Grid.Column="3"
+                Width="26"
+                Height="26"
+                Margin="6,0,0,0"
+                Background="Transparent"
+                BorderThickness="0"
+                Cursor="Hand"
+                ToolTip="Renombrar conversación"
+                Tag="{Binding}"
+                Focusable="False">
+
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+
+                        <Border x:Name="ButtonBorder"
+                    Background="Transparent"
+                    CornerRadius="6"
+                    Width="26"
+                    Height="26">
+
+                            <Viewbox Width="16"
+                             Height="16"
+                             VerticalAlignment="Center"
+                             HorizontalAlignment="Center">
+
+                                <Grid Width="24" Height="24">
+
+                                    <Path Data="M12 20H21
+                                                M16.5 3.5
+                                                A2.12 2.12 0 0 1 19.5 6.5
+                                                L9 17
+                                                L4 18
+                                                L5 13
+                                                L15.5 2.5Z"
+                                          Stroke="#C4A3FF"
+                                          StrokeThickness="1.8"
+                                          StrokeStartLineCap="Round"
+                                          StrokeEndLineCap="Round"
+                                          StrokeLineJoin="Round"
+                                          Stretch="Uniform"
+                                          Fill="Transparent">
+                                        <Path.RenderTransform>
+                                            <TranslateTransform Y="1"/>
+                                        </Path.RenderTransform>
+                                    </Path>
+
+                                </Grid>
+
+                            </Viewbox>
+
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder"
+                            Property="Background"
+                            Value="#407651B5"/>
+                            </Trigger>
+
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder"
+                            Property="Background"
+                            Value="#707651B5"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Button.Template>
+
+            </Button>
+
+            <!-- BOTÓN ELIMINAR CONVERSACIÓN -->
+            <Button Grid.Column="2"
+                Width="26"
+                Height="26"
+                Margin="6,0,0,0"
+                Background="Transparent"
+                BorderThickness="0"
+                Cursor="Hand"
+                ToolTip="Eliminar conversación"
+                Tag="{Binding}"
+                Focusable="False"
+                x:Name="DeleteConversationButton">
+
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+
+                        <Border x:Name="ButtonBorder"
+                        Background="Transparent"
+                        CornerRadius="6"
+                        Width="26"
+                        Height="26">
+
+                            <Viewbox Width="16"
+                            Height="16">
+
+                                <Grid Width="24" Height="24">
+
+                                    <Path Data="M3 6H21
+                                    M8 6V4H16V6
+                                    M5 6L6 21H18L19 6
+                                    M10 10V17
+                                    M14 10V17"
+                                    Stroke="#C4A3FF"
+                                    StrokeThickness="1.8"
+                                    StrokeStartLineCap="Round"
+                                    StrokeEndLineCap="Round"
+                                    StrokeLineJoin="Round"
+                                    Fill="Transparent"/>
+
+                                </Grid>
+                            </Viewbox>
+
+                        </Border>
+                        <ControlTemplate.Triggers>
+
+                            <!-- Hover suave -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder"
+                                Property="Background"
+                                Value="#407651B5"/>
+                            </Trigger>
+
+                            <!-- Efecto al presionar -->
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder"
+                                Property="Background"
+                                Value="#707651B5"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Button.Template>
+
+            </Button>
 
         </Grid>
 

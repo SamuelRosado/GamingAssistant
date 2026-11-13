@@ -9,6 +9,10 @@ namespace GamingAssistant.Desktop.Views
     public partial class SidebarView : UserControl
     {
         public event EventHandler? ToggleSidebarRequested;
+        public event EventHandler? NewConversationRequested;
+        public event EventHandler<Conversation>? ConversationSelected;
+        public event EventHandler<Conversation>? DeleteConversationRequested;
+        public event EventHandler<Conversation>? RenameConversationRequested;
         public bool IsExpanded { get; private set; } = true;
 
         public SidebarView()
@@ -21,11 +25,54 @@ namespace GamingAssistant.Desktop.Views
             ConversationsListBox.ItemsSource = conversations;
         }
 
-        private void HamburgerButton_Click(
-            object sender,
-            RoutedEventArgs e)
+        private void HamburgerButton_Click(object sender, RoutedEventArgs e)
         {
             ToggleSidebarRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void NewConversationButton_Click(object sender, RoutedEventArgs e)
+        {
+            NewConversationRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ConversationsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ConversationsListBox.SelectedItem is not Conversation conversation)
+                return;
+
+            ConversationSelected?.Invoke(this, conversation);
+        }
+
+        private void ConversationButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (e.OriginalSource is not Button button ||
+                button.Tag is not Conversation conversation)
+                return;
+
+            switch (button.Name)
+            {
+                case "RenameConversationButton":
+                    e.Handled = true;
+                    RenameConversationRequested?.Invoke(this, conversation);
+                    break;
+
+                case "DeleteConversationButton":
+                    e.Handled = true;
+                    DeleteConversationRequested?.Invoke(this, conversation);
+                    break;
+            }
+        }
+
+        private void RenameConversationButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (e.OriginalSource is not Button button ||
+                button.Name != "RenameConversationButton" ||
+                button.Tag is not Conversation conversation)
+                return;
+
+            e.Handled = true;
+
+            RenameConversationRequested?.Invoke(this, conversation);
         }
 
         private void CompactConversationsButton_Click(object sender, RoutedEventArgs e)

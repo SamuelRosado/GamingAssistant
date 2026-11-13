@@ -30,7 +30,11 @@ namespace GamingAssistant.Desktop
             string databasePath = Path.Combine(appDataPath,"samira.db");
 
             var personalitySettings = _personalityLoader.Load();
-            services.AddDbContextFactory<SamiraDbContext>(options => { options.UseSqlite($"Data Source={databasePath}"); });
+            services.AddDbContextFactory<SamiraDbContext>(options =>
+            {
+                options.UseSqlite(
+                    $"Data Source={databasePath};Foreign Keys=True");
+            });
             services.AddTransient<IConversationRepository, ConversationRepository>();
             services.AddSingleton(personalitySettings);
             services.AddSingleton<IReplayBufferService, ReplayBufferService>();

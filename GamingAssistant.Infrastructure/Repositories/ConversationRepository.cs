@@ -118,5 +118,37 @@ namespace GamingAssistant.Infrastructure.Repositories
 
             await context.SaveChangesAsync(cancellationToken);
         }
+
+        public async Task RenameConversationAsync(int conversationId, string newTitle, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(newTitle))
+                throw new ArgumentException(
+                    "El título no puede estar vacío.",
+                    nameof(newTitle));
+
+            string title = newTitle.Trim();
+
+            if (title.Length > 100)
+                throw new ArgumentException(
+                    "El título no puede superar los 100 caracteres.",
+                    nameof(newTitle));
+
+            await using var context =
+                await _contextFactory.CreateDbContextAsync(
+                    cancellationToken);
+
+            var conversation = await context.Conversations
+                .FirstOrDefaultAsync(
+                    x => x.Id == conversationId,
+                    cancellationToken);
+
+            if (conversation is null)
+                throw new InvalidOperationException(
+                    "La conversación no existe.");
+
+            conversation.Title = title;
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
     }
 }
