@@ -1,5 +1,6 @@
 ﻿using GamingAssistant.Application.Abstractions.Services;
 using GamingAssistant.Application.Configuration;
+using GamingAssistant.Application.Features.Chat.Models;
 using GamingAssistant.Application.Services;
 using GamingAssistant.Infrastructure.Models.Ollama;
 using System;
@@ -21,18 +22,29 @@ namespace GamingAssistant.Infrastructure.Services
             _samiraPersonalitySettings = samiraPersonalitySettings;
         }
 
-        public async Task<string> GetResponseAsync(string message, CancellationToken cancellationToken)
+        public async Task<string> GetResponseAsync(IReadOnlyList<ConversationMessage> messages, CancellationToken cancellationToken)
         {
+            // 1. Crear el historial incluyendo la personalidad de SAMIRA
+            var chatMessages = new List<ConversationMessage>
+            {
+                new ConversationMessage("system", BuildSystemPrompt())
+            };
+
+            // 2. Agregar los mensajes de la conversación
+            chatMessages.AddRange(messages);
+
+            // 3. Construir el cuerpo de la solicitud para Ollama
             var dataChat = new
             {
                 model = "qwen2.5:3b",
-                messages = new[]
+                messages = chatMessages.Select(m => new
                 {
-                    new { role = "system", content =  BuildSystemPrompt()},
-                    new { role = "user", content = message }             
-                },
+                    role = m.Role,
+                    content = m.Content
+                }).ToArray(),
                 stream = false
             };
+
 
             string jsonString = JsonSerializer.Serialize(dataChat);
 

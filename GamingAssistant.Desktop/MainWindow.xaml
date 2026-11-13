@@ -9,301 +9,32 @@
         WindowStartupLocation="CenterScreen"
         Background="#17151F"
         Foreground="#F4F0FA"
-        FontFamily="Segoe UI">
+        FontFamily="Segoe UI"
+        xmlns:views="clr-namespace:GamingAssistant.Desktop.Views">
 
     <Window.Resources>
-        <SolidColorBrush x:Key="PanelBrush" Color="#211E2B"/>
-        <SolidColorBrush x:Key="CardBrush" Color="#2B2638"/>
-        <SolidColorBrush x:Key="AccentBrush" Color="#9870D8"/>
-        <SolidColorBrush x:Key="MutedBrush" Color="#A69CB5"/>
-
-        <Style TargetType="Button">
-            <Setter Property="Background" Value="#393047"/>
-            <Setter Property="Foreground" Value="#F4F0FA"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="12,9"/>
-            <Setter Property="Margin" Value="0,4"/>
-            <Setter Property="Cursor" Value="Hand"/>
-        </Style>
-
         <Style TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#F4F0FA"/>
+            <Setter Property="Foreground"
+                Value="{StaticResource PrimaryTextBrush}"/>
         </Style>
     </Window.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="245"/>
+            <ColumnDefinition x:Name="SidebarColumn" Width="245"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- BARRA LATERAL -->
-        <Border Grid.Column="0"
-                Background="#211E2B"
-                Padding="20">
+        <!-- NUEVA BARRA LATERAL SAMIRA -->
 
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <!-- IDENTIDAD -->
-                <StackPanel Grid.Row="0" Margin="0,5,0,35">
-                    <TextBlock Text="SAMIRA"
-                               FontSize="25"
-                               FontWeight="Bold"
-                               Foreground="#C4A3FF"/>
-
-                    <TextBlock Text="GAMING ASSISTANT"
-                               FontSize="10"
-                               Foreground="{StaticResource MutedBrush}"
-                               Margin="2,3,0,0"/>
-                </StackPanel>
-
-                <!-- NAVEGACIÓN -->
-                <StackPanel Grid.Row="1">
-                    <TextBlock Text="MENÚ"
-                               FontSize="11"
-                               FontWeight="Bold"
-                               Foreground="{StaticResource MutedBrush}"
-                               Margin="0,0,0,10"/>
-
-                    <Button Content="  Conversación"
-                            HorizontalContentAlignment="Left"
-                            Background="#493665"/>
-
-                    <Button Content="  Repeticiones"
-                            HorizontalContentAlignment="Left"/>
-
-                    <Button Content="  Configuración"
-                            HorizontalContentAlignment="Left"/>
-                </StackPanel>
-
-                <!-- ESPACIO LIBRE -->
-                <Grid Grid.Row="2"/>
-
-                <!-- CONTROLES DE REPETICIÓN -->
-                <Border Grid.Row="3"
-                        Background="#2B2638"
-                        CornerRadius="10"
-                        Padding="12">
-
-                    <StackPanel>
-                        <TextBlock Text="CONTROL DE REPETICIONES"
-                                   FontSize="10"
-                                   FontWeight="Bold"
-                                   Foreground="#C4A3FF"
-                                   Margin="0,0,0,10"/>
-
-                        <TextBlock Text="Duración"
-                                   FontSize="12"
-                                   Margin="0,0,0,6"/>
-
-                        <ComboBox x:Name="DurationComboBox"
-                                  SelectedIndex="0"
-                                  Margin="0,0,0,10"
-                                  Background="#393047"
-                                  Foreground="#17151F">
-
-                            <ComboBoxItem Content="Seleccionar tiempo..."/>
-                            <ComboBoxItem Content="30 segundos" Tag="30"/>
-                            <ComboBoxItem Content="1 minuto" Tag="60"/>
-                            <ComboBoxItem Content="5 minutos" Tag="300"/>
-                            <ComboBoxItem Content="10 minutos" Tag="600"/>
-
-                        </ComboBox>
-
-                        <Button x:Name="saveReplayButton"
-                                Content="Guardar repetición"
-                                Background="#7651B5"
-                                Click="SaveReplayButton_Click"/>
-
-                        <Button x:Name="cancelReplayButton"
-                                Content="Cancelar operación"
-                                IsEnabled="False"
-                                Click="CancelReplayButton_Click"/>
-                    </StackPanel>
-                </Border>
-            </Grid>
-        </Border>
+        <views:SidebarView
+            x:Name="SidebarControl"
+            Grid.Column="0"/>
 
         <!-- ÁREA PRINCIPAL -->
-        <Grid Grid.Column="1" Margin="28">
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
-            <!-- ENCABEZADO -->
-            <Border Grid.Row="0"
-                    Padding="0,0,0,18"
-                    BorderBrush="#393344"
-                    BorderThickness="0,0,0,1">
-
-                <Grid>
-                    <StackPanel>
-                        <TextBlock Text="Conversación"
-                                   FontSize="23"
-                                   FontWeight="SemiBold"/>
-
-                        <TextBlock Text="Tu asistente personal está lista."
-                                   FontSize="12"
-                                   Foreground="{StaticResource MutedBrush}"
-                                   Margin="0,5,0,0"/>
-                    </StackPanel>
-
-                    <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center">
-
-                        <Ellipse Width="8"
-                                 Height="8"
-                                 Fill="#5DD69A"
-                                 Margin="0,0,8,0"/>
-
-                        <TextBlock Text="En línea"
-                                   FontSize="12"
-                                   Foreground="#5DD69A"/>
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-            <!-- CONVERSACIÓN -->
-            <ScrollViewer x:Name="ChatScrollViewer"
-              Grid.Row="1"
-              VerticalScrollBarVisibility="Auto"
-              Margin="0,20,0,20">
-
-                <ItemsControl x:Name="ChatMessagesControl">
-
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-
-                            <Grid Margin="0,0,0,16">
-
-                                <Border x:Name="MessageBubble"
-                    Background="#302A3E"
-                    CornerRadius="12"
-                    Padding="16"
-                    MaxWidth="550"
-                    HorizontalAlignment="Left">
-
-                                    <StackPanel>
-
-                                        <TextBlock x:Name="SenderName"
-                               Text="SAMIRA"
-                               FontSize="11"
-                               FontWeight="Bold"
-                               Foreground="#C4A3FF"
-                               Margin="0,0,0,8"/>
-
-                                        <TextBox Text="{Binding Content, Mode=OneWay}"
-                             TextWrapping="Wrap"
-                             Background="Transparent"
-                             Foreground="White"
-                             BorderThickness="0"
-                             IsReadOnly="True"
-                             IsReadOnlyCaretVisible="False"
-                             FontSize="14"
-                             Padding="0"
-                             MaxWidth="500"/>
-
-                                    </StackPanel>
-                                </Border>
-
-                            </Grid>
-
-                            <DataTemplate.Triggers>
-
-                                <DataTrigger Binding="{Binding IsFromSamira}"
-                         Value="False">
-
-                                    <Setter TargetName="MessageBubble"
-                        Property="Background"
-                        Value="#7651B5"/>
-
-                                    <Setter TargetName="MessageBubble"
-                        Property="HorizontalAlignment"
-                        Value="Right"/>
-
-                                    <Setter TargetName="SenderName"
-                        Property="Text"
-                        Value="TÚ"/>
-
-                                    <Setter TargetName="SenderName"
-                        Property="Foreground"
-                        Value="#F0DFFF"/>
-
-                                </DataTrigger>
-
-                            </DataTemplate.Triggers>
-
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-
-                </ItemsControl>
-
-            </ScrollViewer>
-
-            <!-- ESTADO DE SAMIRA -->
-            <StackPanel x:Name="ThinkingIndicator"
-            Grid.Row="2"
-            Orientation="Horizontal"
-            Visibility="Collapsed"
-            Margin="0,0,0,12">
-
-                <Ellipse Width="8"
-             Height="8"
-             Fill="#C4A3FF"
-             Margin="0,0,10,0"
-             VerticalAlignment="Center"/>
-
-                <TextBlock Text="SAMIRA está pensando..."
-               Foreground="#C4A3FF"
-               FontSize="12"
-               FontStyle="Italic"
-               VerticalAlignment="Center"/>
-
-            </StackPanel>
-
-            <!-- ESCRITURA -->
-            <Border Grid.Row="3"
-                    Background="#2B2638"
-                    CornerRadius="12"
-                    Padding="12">
-
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBox x:Name="MessageTextBox"
-                             Grid.Column="0"
-                             Background="Transparent"
-                             Foreground="#F4F0FA"
-                             BorderThickness="0"
-                             FontSize="14"
-                             VerticalContentAlignment="Center"
-                             AcceptsReturn="False"
-                             MinHeight="35"
-                             KeyDown="MessageTextBox_KeyDown"/>
-
-                    <Button x:Name="SendMessageButton"
-                            Grid.Column="1"
-                            Content="Enviar"
-                            Background="#7651B5"
-                            Margin="10,0,0,0"
-                            Click="SendMessageButton_Click"/>
-                </Grid>
-            </Border>
-
-        </Grid>
+        <views:ChatView
+            x:Name="ChatControl"
+            Grid.Column="1"/>
+        
     </Grid>
 </Window>
